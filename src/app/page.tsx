@@ -3,6 +3,13 @@
 import { useState } from "react";
 import { Search, Plane } from "lucide-react";
 import { FlightCard } from "@/components/FlightCard";
+import dynamic from "next/dynamic";
+import Image from "next/image";
+
+const FlightMap = dynamic(() => import("@/components/FlightMap"), {
+    ssr: false,
+    loading: () => <div className="w-full h-96 bg-gray-800/50 rounded-xl animate-pulse" />,
+});
 
 interface Flight {
     flightNumber: string;
@@ -34,7 +41,8 @@ export default function Home() {
         setLoading(true);
         setSearched(true);
         try {
-            const res = await fetch(`/api/flights?query=${encodeURIComponent(query)}`);
+            let url = `/api/flights?query=${encodeURIComponent(query)}`;
+            const res = await fetch(url);
             const data = await res.json();
             setFlights(data);
         } catch (error) {
@@ -46,6 +54,19 @@ export default function Home() {
 
     return (
         <main className="min-h-screen bg-gray-900 text-white flex flex-col items-center p-4 sm:p-24 relative overflow-hidden">
+            {/* Logo in upper left corner */}
+            <div className="fixed top-4 left-4 sm:top-8 sm:left-8 z-20">
+                <div className="p-4 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl backdrop-blur-md border border-white/10 shadow-2xl hover:border-white/20 transition-all duration-300">
+                    <Image
+                        src="/logo.png"
+                        alt="Flight Tracker Logo"
+                        width={511}
+                        height={595}
+                        className="w-24 h-auto sm:w-30 hover:scale-105 transition-transform duration-300"
+                    />
+                </div>
+            </div>
+
             {/* Background Elements */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
                 <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/20 rounded-full blur-[100px]" />
@@ -54,11 +75,6 @@ export default function Home() {
 
             <div className="z-10 w-full max-w-3xl flex flex-col items-center">
                 <div className="mb-12 text-center">
-                    <div className="flex items-center justify-center gap-3 mb-4">
-                        <div className="p-3 bg-blue-500/20 rounded-xl backdrop-blur-sm border border-blue-500/30">
-                            <Plane className="w-8 h-8 text-blue-400" />
-                        </div>
-                    </div>
                     <h1 className="text-4xl sm:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 mb-4">
                         Flight Tracker
                     </h1>
@@ -69,19 +85,21 @@ export default function Home() {
 
                 <form onSubmit={handleSearch} className="w-full max-w-xl mb-12 relative group">
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-500" />
-                    <div className="relative flex items-center bg-gray-800/50 backdrop-blur-xl border border-white/10 rounded-2xl p-2 shadow-2xl">
-                        <Search className="w-6 h-6 text-gray-400 ml-4" />
-                        <input
-                            type="text"
-                            value={query}
-                            onChange={(e) => setQuery(e.target.value)}
-                            placeholder="Enter flight number (e.g., AA123)"
-                            className="w-full bg-transparent border-none outline-none text-white px-4 py-3 text-lg placeholder-gray-500"
-                        />
+                    <div className="relative flex flex-col sm:flex-row items-center bg-gray-800/50 backdrop-blur-xl border border-white/10 rounded-2xl p-2 shadow-2xl gap-2">
+                        <div className="flex-1 flex items-center w-full">
+                            <Search className="w-6 h-6 text-gray-400 ml-4" />
+                            <input
+                                type="text"
+                                value={query}
+                                onChange={(e) => setQuery(e.target.value)}
+                                placeholder="Flight # (e.g., AA123)"
+                                className="w-full bg-transparent border-none outline-none text-white px-4 py-3 text-lg placeholder-gray-500"
+                            />
+                        </div>
                         <button
                             type="submit"
                             disabled={loading}
-                            className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                         >
                             {loading ? "Searching..." : "Search"}
                         </button>
@@ -93,7 +111,10 @@ export default function Home() {
                         <div className="text-gray-400 animate-pulse">Locating flights...</div>
                     ) : flights.length > 0 ? (
                         flights.map((flight) => (
-                            <FlightCard key={flight.flightNumber} flight={flight} />
+                            <div key={flight.flightNumber} className="w-full flex flex-col gap-6">
+                                <FlightCard flight={flight} />
+                                <FlightMap origin={flight.origin} destination={flight.destination} />
+                            </div>
                         ))
                     ) : searched ? (
                         <div className="text-gray-500 text-center p-8 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-sm">

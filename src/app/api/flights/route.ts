@@ -28,24 +28,29 @@ export async function GET(request: Request) {
     const API_KEY = process.env.AVIATIONSTACK_API_KEY;
 
     if (!API_KEY) {
-        // Fallback to mock data if no key is present, or return error
         console.error("No API key found");
         return NextResponse.json({ error: 'API key not configured' }, { status: 500 });
     }
 
     try {
-        const res = await fetch(
-            `http://api.aviationstack.com/v1/flights?access_key=${API_KEY}&flight_iata=${query}`
-        );
+        let apiUrl = `http://api.aviationstack.com/v1/flights?access_key=${API_KEY}&flight_iata=${query}`;
+        console.log(`Fetching from: ${apiUrl}`);
 
+        const res = await fetch(apiUrl);
         const data = await res.json();
 
+        console.log('Aviationstack response status:', res.status);
+        console.log('Aviationstack data count:', data.data ? data.data.length : 0);
+
         if (!data.data || data.data.length === 0) {
+            console.log('No data found in API response');
             return NextResponse.json([]);
         }
 
+        let flightData = data.data;
+
         // Map Aviationstack data to our Flight interface
-        const flights: Flight[] = data.data.map((item: any) => ({
+        const flights: Flight[] = flightData.map((item: any) => ({
             flightNumber: item.flight.iata,
             origin: {
                 code: item.departure.iata,

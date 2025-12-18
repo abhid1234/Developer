@@ -44,15 +44,15 @@ export function FlightCard({ flight }: FlightCardProps) {
     };
 
     return (
-        <div className="w-full max-w-md bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 shadow-xl text-white my-4 hover:bg-white/15 transition-all duration-300">
+        <div className="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 shadow-xl text-white my-4 hover:bg-white/15 transition-all duration-300">
             <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center gap-2">
                     <Plane className="w-5 h-5 text-blue-400" />
                     <span className="font-bold text-xl tracking-wider">{flight.flightNumber}</span>
                 </div>
                 <span className={`px-3 py-1 rounded-full text-xs font-semibold ${flight.status === 'On Time' ? 'bg-green-500/20 text-green-300' :
-                        flight.status === 'Delayed' ? 'bg-red-500/20 text-red-300' :
-                            'bg-blue-500/20 text-blue-300'
+                    flight.status === 'Delayed' ? 'bg-red-500/20 text-red-300' :
+                        'bg-blue-500/20 text-blue-300'
                     }`}>
                     {flight.status}
                 </span>
