@@ -5,96 +5,66 @@ interface Flight {
     origin: {
         code: string;
         city: string;
-        time: string; // ISO string
+        time: string;
         timezone: string;
     };
     destination: {
         code: string;
         city: string;
-        time: string; // ISO string
+        time: string;
         timezone: string;
     };
     status: string;
 }
-
-const MOCK_FLIGHTS: Flight[] = [
-    {
-        flightNumber: 'AA123',
-        origin: {
-            code: 'JFK',
-            city: 'New York',
-            time: '2024-05-20T10:00:00Z',
-            timezone: 'America/New_York',
-        },
-        destination: {
-            code: 'LHR',
-            city: 'London',
-            time: '2024-05-20T22:00:00Z',
-            timezone: 'Europe/London',
-        },
-        status: 'On Time',
-    },
-    {
-        flightNumber: 'BA456',
-        origin: {
-            code: 'LHR',
-            city: 'London',
-            time: '2024-05-21T14:00:00Z',
-            timezone: 'Europe/London',
-        },
-        destination: {
-            code: 'JFK',
-            city: 'New York',
-            time: '2024-05-21T17:00:00Z',
-            timezone: 'America/New_York',
-        },
-        status: 'Delayed',
-    },
-    {
-        flightNumber: 'UA789',
-        origin: {
-            code: 'SFO',
-            city: 'San Francisco',
-            time: '2024-05-22T08:00:00Z',
-            timezone: 'America/Los_Angeles',
-        },
-        destination: {
-            code: 'HND',
-            city: 'Tokyo',
-            time: '2024-05-23T11:00:00Z',
-            timezone: 'Asia/Tokyo',
-        },
-        status: 'Scheduled',
-    },
-    {
-        flightNumber: 'AS718',
-        origin: {
-            code: 'SEA',
-            city: 'Seattle',
-            time: '2024-05-24T09:00:00Z',
-            timezone: 'America/Los_Angeles',
-        },
-        destination: {
-            code: 'DCA',
-            city: 'Washington DC',
-            time: '2024-05-24T17:15:00Z',
-            timezone: 'America/New_York',
-        },
-        status: 'On Time',
-    },
-];
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('query');
 
     if (!query) {
-        return NextResponse.json(MOCK_FLIGHTS);
+        return NextResponse.json({ error: 'Flight number is required' }, { status: 400 });
     }
 
-    const filteredFlights = MOCK_FLIGHTS.filter((flight) =>
-        flight.flightNumber.toLowerCase().includes(query.toLowerCase())
-    );
+    const API_KEY = process.env.AVIATIONSTACK_API_KEY;
 
-    return NextResponse.json(filteredFlights);
+    if (!API_KEY) {
+        // Fallback to mock data if no key is present, or return error
+        console.error("No API key found");
+        return NextResponse.json({ error: 'API key not configured' }, { status: 500 });
+    }
+
+    try {
+        const res = await fetch(
+            `http://api.aviationstack.com/v1/flights?access_key=${API_KEY}&flight_iata=${query}`
+        );
+
+        const data = await res.json();
+
+        if (!data.data || data.data.length === 0) {
+            return NextResponse.json([]);
+        }
+
+        // Map Aviationstack data to our Flight interface
+        const flights: Flight[] = data.data.map((item: any) => ({
+            flightNumber: item.flight.iata,
+            origin: {
+                code: item.departure.iata,
+                city: item.departure.airport,
+                time: item.departure.scheduled,
+                timezone: item.departure.timezone,
+            },
+            destination: {
+                code: item.arrival.iata,
+                city: item.arrival.airport,
+                time: item.arrival.scheduled,
+                timezone: item.arrival.timezone,
+            },
+            status: item.flight_status ? (item.flight_status.charAt(0).toUpperCase() + item.flight_status.slice(1)) : 'Unknown',
+        }));
+
+        return NextResponse.json(flights);
+    } catch (error) {
+        console.error('Aviationstack API error:', error);
+        return NextResponse.json({ error: 'Failed to fetch flight data' }, { status: 500 });
+    }
 }
