@@ -5,8 +5,11 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "Flight Lookup",
+    title: "Flight Tracker",
     description: "Track your flights in real-time",
+    icons: {
+        icon: "/logo.png",
+    },
 };
 
 export default function RootLayout({

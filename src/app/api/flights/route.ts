@@ -49,8 +49,17 @@ export async function GET(request: Request) {
 
         let flightData = data.data;
 
+        // Deduplicate flights based on flight number and departure time
+        const uniqueFlights = new Map();
+        flightData.forEach((item: any) => {
+            const key = `${item.flight.iata}-${item.departure.scheduled}`;
+            if (!uniqueFlights.has(key)) {
+                uniqueFlights.set(key, item);
+            }
+        });
+
         // Map Aviationstack data to our Flight interface
-        const flights: Flight[] = flightData.map((item: any) => ({
+        const flights: Flight[] = Array.from(uniqueFlights.values()).map((item: any) => ({
             flightNumber: item.flight.iata,
             origin: {
                 code: item.departure.iata,

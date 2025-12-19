@@ -56,14 +56,14 @@ export default function Home() {
     return (
         <main className="min-h-screen bg-gray-900 text-white flex flex-col items-center p-4 sm:p-24 relative overflow-hidden">
             {/* Logo in upper left corner */}
-            <div className="fixed top-4 left-4 sm:top-8 sm:left-8 z-20">
+            <div className="absolute top-4 left-4 sm:top-8 sm:left-8 z-20">
                 <div className="p-4 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl backdrop-blur-md border border-white/10 shadow-2xl hover:border-white/20 transition-all duration-300">
                     <Image
                         src="/logo.png"
                         alt="Flight Tracker Logo"
                         width={511}
                         height={595}
-                        className="w-24 h-auto sm:w-30 hover:scale-105 transition-transform duration-300"
+                        className="w-20 h-auto sm:w-24 hover:scale-105 transition-transform duration-300"
                     />
                 </div>
             </div>
@@ -86,7 +86,7 @@ export default function Home() {
 
             <div className="z-10 w-full max-w-3xl flex flex-col items-center">
                 <div className="mb-12 text-center">
-                    <h1 className="text-4xl sm:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 mb-4">
+                    <h1 className="text-4xl sm:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 mb-4 pb-2">
                         Flight Tracker
                     </h1>
                     <p className="text-gray-400 text-lg">
@@ -103,7 +103,7 @@ export default function Home() {
                                 type="text"
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
-                                placeholder="Flight # (e.g., AA123)"
+                                placeholder="Flight # (e.g., AA100)"
                                 className="w-full bg-transparent border-none outline-none text-white px-4 py-3 text-lg placeholder-gray-500"
                             />
                         </div>
@@ -130,7 +130,7 @@ export default function Home() {
                     ) : searched ? (
                         <div className="text-gray-500 text-center p-8 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-sm">
                             <p className="text-xl font-semibold mb-2">No flights found</p>
-                            <p className="text-sm">Try searching for "AA123", "BA456", or "UA789"</p>
+                            <p className="text-sm">Try searching for "AA100", "BA456", or "UA789"</p>
                         </div>
                     ) : null}
                 </div>
