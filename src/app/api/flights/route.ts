@@ -59,7 +59,7 @@ export async function GET(request: Request) {
         });
 
         // Map Aviationstack data to our Flight interface
-        const flights: Flight[] = Array.from(uniqueFlights.values()).map((item: any) => ({
+        const processedFlights: Flight[] = flightData.map((item: any) => ({
             flightNumber: item.flight.iata,
             origin: {
                 code: item.departure.iata,
@@ -75,6 +75,22 @@ export async function GET(request: Request) {
             },
             status: item.flight_status ? (item.flight_status.charAt(0).toUpperCase() + item.flight_status.slice(1)) : 'Unknown',
         }));
+
+        // Sort to find the best match
+        processedFlights.sort((a, b) => {
+            // Prioritize Active status
+            if (a.status === 'Active' && b.status !== 'Active') return -1;
+            if (b.status === 'Active' && a.status !== 'Active') return 1;
+
+            // Then Scheduled
+            if (a.status === 'Scheduled' && b.status !== 'Scheduled') return -1;
+            if (b.status === 'Scheduled' && a.status !== 'Scheduled') return 1;
+
+            // Then valid departure times (newest first)
+            return new Date(b.origin.time).getTime() - new Date(a.origin.time).getTime();
+        });
+
+        const flights = processedFlights.slice(0, 1);
 
         return NextResponse.json(flights);
     } catch (error) {
