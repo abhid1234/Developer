@@ -119,20 +119,20 @@ export default function Home() {
     return (
         <main className="min-h-screen bg-gray-900 text-white flex flex-col items-center p-4 sm:p-24 relative overflow-hidden">
             {/* Logo in upper left corner */}
-            <div className="fixed top-4 left-4 sm:top-8 sm:left-8 z-20">
+            <div className="absolute top-4 left-4 sm:top-8 sm:left-8 z-20">
                 <div className="p-2 sm:p-4 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl backdrop-blur-md border border-white/10 shadow-2xl hover:border-white/20 transition-all duration-300">
                     <Image
                         src="/logo.png"
                         alt="Flight Tracker Logo"
                         width={511}
                         height={595}
-                        className="w-14 h-auto sm:w-24 hover:scale-105 transition-transform duration-300"
+                        className="w-10 h-auto sm:w-16 hover:scale-105 transition-transform duration-300"
                     />
                 </div>
             </div>
 
             {/* Architecture Link in upper right corner */}
-            <div className="fixed top-4 right-4 sm:top-8 sm:right-8 z-20">
+            <div className="absolute top-4 right-4 sm:top-8 sm:right-8 z-20">
                 <Link
                     href="/architecture"
                     className="px-6 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 rounded-xl text-white font-medium transition-all duration-300 hover:scale-105 shadow-lg"
