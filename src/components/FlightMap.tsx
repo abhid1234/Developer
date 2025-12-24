@@ -1,6 +1,6 @@
 'use client';
 
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { useEffect } from 'react';
@@ -35,6 +35,11 @@ interface FlightMapProps {
         lat?: number;
         lng?: number;
     };
+    livePosition?: {
+        lat: number;
+        lng: number;
+        direction: number;
+    };
 }
 
 // Comprehensive list of 100+ major airports worldwide
@@ -50,6 +55,8 @@ const AIRPORT_COORDS: Record<string, [number, number]> = {
     SAN: [32.7336, -117.1897], TPA: [27.9755, -82.5332], PDX: [45.5898, -122.5951],
     STL: [38.7487, -90.3700], HNL: [21.3187, -157.9225], ANC: [61.1743, -149.9962],
     OGG: [20.8986, -156.4305], KOA: [19.7388, -156.0456], LIH: [21.9760, -159.3390],
+    ONT: [34.0560, -117.6012], SJC: [37.3619, -121.9290], OAK: [37.7213, -122.2207],
+    SNA: [33.6762, -117.8674], BUR: [34.2007, -118.3590],
     YYZ: [43.6777, -79.6248], YVR: [49.1967, -123.1815], YUL: [45.4657, -73.7455],
 
     // Europe
@@ -99,7 +106,15 @@ const AIRPORT_COORDS: Record<string, [number, number]> = {
     DEFAULT: [0, 0],
 };
 
-export default function FlightMap({ origin, destination }: FlightMapProps) {
+function MapController({ bounds }: { bounds: L.LatLngBoundsExpression }) {
+    const map = useMap();
+    useEffect(() => {
+        map.fitBounds(bounds, { padding: [50, 50] });
+    }, [map, bounds]);
+    return null;
+}
+
+export default function FlightMap({ origin, destination, livePosition }: FlightMapProps) {
     const originCoords = AIRPORT_COORDS[origin.code] || AIRPORT_COORDS.DEFAULT;
     const destCoords = AIRPORT_COORDS[destination.code] || AIRPORT_COORDS.DEFAULT;
 
@@ -123,6 +138,7 @@ export default function FlightMap({ origin, destination }: FlightMapProps) {
                 scrollWheelZoom={false}
                 style={{ height: '100%', width: '100%' }}
             >
+                <MapController bounds={[originCoords, destCoords]} />
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -139,6 +155,22 @@ export default function FlightMap({ origin, destination }: FlightMapProps) {
                         {destination.city} ({destination.code})
                     </Popup>
                 </Marker>
+
+                {livePosition && (
+                    <Marker
+                        position={[livePosition.lat, livePosition.lng]}
+                        icon={L.icon({
+                            iconUrl: 'https://cdn-icons-png.flaticon.com/512/7893/7893979.png', // Plane icon
+                            iconSize: [32, 32],
+                            iconAnchor: [16, 16],
+                            className: `rotate-[${livePosition.direction}deg]`
+                        })}
+                    >
+                        <Popup>
+                            Current Position
+                        </Popup>
+                    </Marker>
+                )}
 
                 <Polyline
                     positions={[originCoords, destCoords]}
