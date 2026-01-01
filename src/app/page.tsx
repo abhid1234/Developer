@@ -132,16 +132,16 @@ export default function Home() {
             </div>
 
             {/* Top Right Navigation */}
-            <div className="absolute top-4 right-4 sm:top-8 sm:right-8 z-20 flex gap-4">
+            <div className="absolute top-4 right-4 sm:top-8 sm:right-8 z-20 flex gap-2 sm:gap-4">
                 <Link
                     href="/airport-dashboard"
-                    className="hidden sm:block px-5 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 rounded-xl text-white font-medium transition-all duration-300 hover:scale-105 shadow-lg"
+                    className="px-3 py-2 text-xs sm:text-base sm:px-5 sm:py-3 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 rounded-xl text-white font-medium transition-all duration-300 hover:scale-105 shadow-lg text-center"
                 >
                     Airport Dashboard
                 </Link>
                 <Link
                     href="/architecture"
-                    className="px-6 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 rounded-xl text-white font-medium transition-all duration-300 hover:scale-105 shadow-lg"
+                    className="px-3 py-2 text-xs sm:text-base sm:px-6 sm:py-3 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 rounded-xl text-white font-medium transition-all duration-300 hover:scale-105 shadow-lg text-center"
                 >
                     Architecture
                 </Link>

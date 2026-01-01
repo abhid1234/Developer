@@ -28,13 +28,13 @@ export default function ArchitecturePage() {
 
             {/* Logo in upper left corner */}
             <div className="absolute top-4 left-4 sm:top-8 sm:left-8 z-20">
-                <div className="p-4 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl backdrop-blur-md border border-white/10 shadow-2xl hover:border-white/20 transition-all duration-300">
+                <div className="p-2 sm:p-4 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl backdrop-blur-md border border-white/10 shadow-2xl hover:border-white/20 transition-all duration-300">
                     <Image
                         src="/logo.png"
                         alt="Flight Tracker Logo"
                         width={511}
                         height={595}
-                        className="w-20 h-auto sm:w-24 hover:scale-105 transition-transform duration-300"
+                        className="w-10 h-auto sm:w-16 hover:scale-105 transition-transform duration-300"
                     />
                 </div>
             </div>
