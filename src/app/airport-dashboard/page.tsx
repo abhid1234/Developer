@@ -92,14 +92,14 @@ export default function AirportDashboard() {
                             value={airportCode}
                             onChange={(e) => setAirportCode(e.target.value.toUpperCase())}
                             placeholder="JFK"
-                            className="w-1/2 bg-black/20 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500/50 transition-colors uppercase tracking-wider font-bold placeholder:font-normal"
+                            className="w-1/2 bg-white/10 border border-white/20 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:bg-white/20 transition-all text-white scheme-dark placeholder-gray-400"
                             maxLength={4}
                         />
                         <input
                             type="date"
                             value={selectedDate}
                             onChange={(e) => setSelectedDate(e.target.value)}
-                            className="w-1/2 bg-black/20 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500/50 transition-colors text-white scheme-dark"
+                            className="w-1/2 bg-white/10 border border-white/20 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:bg-white/20 transition-all text-white scheme-dark"
                         />
                         <button type="submit" className="p-3 bg-blue-500/80 hover:bg-blue-500 rounded-xl transition-colors">
                             <Search className="w-5 h-5 text-white" />
