@@ -8,22 +8,25 @@ interface AirportFlight {
     flight: { iata: string; number: string };
     airline: { name: string; iata: string };
     status: string;
-    departure: { scheduled: string; terminal: string; gate: string; delay: number; iata: string; airport: string };
-    arrival: { scheduled: string; terminal: string; gate: string; delay: number; iata: string; airport: string };
+    departure: { scheduled: string; terminal: string; gate: string; delay: number; iata: string; airport: string; timezone?: string };
+    arrival: { scheduled: string; terminal: string; gate: string; delay: number; iata: string; airport: string; timezone?: string };
 }
 
 export default function AirportDashboard() {
+    const [selectedDate, setSelectedDate] = useState("");
     const [airportCode, setAirportCode] = useState("");
     const [searchedCode, setSearchedCode] = useState("");
     const [mode, setMode] = useState<'departure' | 'arrival'>('departure');
     const [flights, setFlights] = useState<AirportFlight[]>([]);
     const [loading, setLoading] = useState(false);
 
-    const fetchFlights = async (code: string, type: 'departure' | 'arrival') => {
+    const fetchFlights = async (code: string, type: 'departure' | 'arrival', date?: string) => {
         if (!code) return;
         setLoading(true);
         try {
-            const res = await fetch(`/api/airports?code=${code}&type=${type}`);
+            let url = `/api/airports?code=${code}&type=${type}`;
+            if (date) url += `&date=${date}`;
+            const res = await fetch(url);
             const data = await res.json();
             if (data.flights) {
                 setFlights(data.flights);
@@ -40,20 +43,26 @@ export default function AirportDashboard() {
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        fetchFlights(airportCode, mode);
+        fetchFlights(airportCode, mode, selectedDate);
     };
 
     // Auto-refresh when tabs switch if we have a code
     useEffect(() => {
         if (searchedCode) {
-            fetchFlights(searchedCode, mode);
+            fetchFlights(searchedCode, mode, selectedDate);
         }
-    }, [mode]);
+    }, [mode, selectedDate]);
 
     const formatTime = (timeStr: string) => {
         const cleanStr = timeStr.replace(/[Zz]|[+-]\d{2}:?\d{2}$/, '');
         const date = new Date(cleanStr);
         return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    };
+
+    const formatDate = (timeStr: string) => {
+        const cleanStr = timeStr.replace(/[Zz]|[+-]\d{2}:?\d{2}$/, '');
+        const date = new Date(cleanStr);
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' });
     };
 
     return (
@@ -77,16 +86,24 @@ export default function AirportDashboard() {
 
                 {/* Search & Controls */}
                 <div className="flex flex-col md:flex-row gap-6 items-center justify-between bg-white/5 p-6 rounded-2xl border border-white/10 backdrop-blur-md shadow-xl">
-                    <form onSubmit={handleSearch} className="relative w-full md:w-96">
+                    <form onSubmit={handleSearch} className="relative w-full md:w-96 flex gap-2">
                         <input
                             type="text"
                             value={airportCode}
                             onChange={(e) => setAirportCode(e.target.value.toUpperCase())}
-                            placeholder="Airport Code (e.g. JFK, LHR)"
-                            className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 pl-11 focus:outline-none focus:border-blue-500/50 transition-colors uppercase tracking-wider font-bold placeholder:font-normal placeholder:capitalize"
+                            placeholder="JFK"
+                            className="w-1/2 bg-black/20 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500/50 transition-colors uppercase tracking-wider font-bold placeholder:font-normal"
                             maxLength={4}
                         />
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <input
+                            type="date"
+                            value={selectedDate}
+                            onChange={(e) => setSelectedDate(e.target.value)}
+                            className="w-1/2 bg-black/20 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500/50 transition-colors text-white scheme-dark"
+                        />
+                        <button type="submit" className="p-3 bg-blue-500/80 hover:bg-blue-500 rounded-xl transition-colors">
+                            <Search className="w-5 h-5 text-white" />
+                        </button>
                     </form>
 
                     <div className="flex bg-black/20 p-1 rounded-xl border border-white/5">
@@ -125,6 +142,7 @@ export default function AirportDashboard() {
                             <table className="w-full text-left border-collapse">
                                 <thead className="bg-black/20 text-gray-400 text-sm uppercase tracking-wider">
                                     <tr>
+                                        <th className="p-4 font-medium">Date</th>
                                         <th className="p-4 font-medium">Time</th>
                                         <th className="p-4 font-medium">Flight</th>
                                         <th className="p-4 font-medium">Airline</th>
@@ -136,11 +154,19 @@ export default function AirportDashboard() {
                                 <tbody className="divide-y divide-white/5 text-sm">
                                     {loading ? (
                                         <tr>
-                                            <td colSpan={6} className="p-8 text-center text-gray-500 animate-pulse">Loading Flight Board...</td>
+                                            <td colSpan={7} className="p-8 text-center text-gray-500 animate-pulse">Loading Flight Board...</td>
                                         </tr>
                                     ) : flights.length > 0 ? (
                                         flights.map((flight, i) => (
                                             <tr key={i} className="hover:bg-white/5 transition-colors group">
+                                                <td className="p-4 text-gray-400">
+                                                    <div className="flex flex-col">
+                                                        <span>{formatDate(mode === 'departure' ? flight.departure.scheduled : flight.arrival.scheduled)}</span>
+                                                        <span className="text-xs text-blue-400/70">
+                                                            {(mode === 'departure' ? flight.departure.timezone : flight.arrival.timezone) || 'Local Time'}
+                                                        </span>
+                                                    </div>
+                                                </td>
                                                 <td className="p-4 font-mono text-blue-300 font-bold">
                                                     {formatTime(mode === 'departure' ? flight.departure.scheduled : flight.arrival.scheduled)}
                                                 </td>
@@ -161,17 +187,17 @@ export default function AirportDashboard() {
                                                 </td>
                                                 <td className="p-4 text-right">
                                                     <span className={`px-3 py-1 rounded-full text-xs font-bold ${flight.status === 'active' || flight.status === 'landed' ? 'bg-green-500/20 text-green-400' :
-                                                            flight.status === 'scheduled' ? 'bg-blue-500/20 text-blue-400' :
-                                                                'bg-gray-500/20 text-gray-400'
+                                                        flight.status === 'scheduled' ? 'bg-blue-500/20 text-blue-400' :
+                                                            'bg-gray-500/20 text-gray-400'
                                                         }`}>
-                                                        {flight.status.toUpperCase()}
+                                                        {flight.status ? flight.status.toUpperCase() : 'UNKNOWN'}
                                                     </span>
                                                 </td>
                                             </tr>
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={6} className="p-12 text-center text-gray-500">
+                                            <td colSpan={7} className="p-12 text-center text-gray-500">
                                                 No flights found for this time window.
                                             </td>
                                         </tr>
@@ -182,6 +208,8 @@ export default function AirportDashboard() {
                     </div>
                 )}
             </div>
+
+
         </main>
     );
 }
