@@ -16,17 +16,29 @@ export async function GET(request: Request) {
 
     try {
         const param = type === 'departure' ? 'dep_iata' : 'arr_iata';
-        let apiUrl = `http://api.aviationstack.com/v1/flights?access_key=${API_KEY}&${param}=${code}&limit=300`;
-
-        // Pass date filter upstream to get historical data
         const dateParam = searchParams.get('date');
-        if (dateParam) {
-            apiUrl += `&flight_date=${dateParam}`;
-        }
 
-        console.log(`Fetching airport data: ${apiUrl.replace(API_KEY, '[REDACTED]')}`);
-        const res = await fetch(apiUrl);
-        const data = await res.json();
+        // Fetch 3 pages in parallel to get ~300 flights (Free tier limits single req to 100)
+        // This helps fill the board for busy airports like JFK
+        const fetchPage = async (offset: number) => {
+            let pageUrl = `http://api.aviationstack.com/v1/flights?access_key=${API_KEY}&${param}=${code}&limit=100&offset=${offset}`;
+            if (dateParam) pageUrl += `&flight_date=${dateParam}`;
+            console.log(`Fetching page offset ${offset}: ${pageUrl.replace(API_KEY, '[REDACTED]')}`);
+            const res = await fetch(pageUrl);
+            const json = await res.json();
+            return json.data || [];
+        };
+
+        const [page1, page2, page3] = await Promise.all([
+            fetchPage(0),
+            fetchPage(100),
+            fetchPage(200)
+        ]);
+
+        const allData = [...page1, ...page2, ...page3];
+
+        // Mock structure for compatibility
+        const data = { data: allData };
 
         if (!data.data) {
             console.error('AviationStack Error:', data);
