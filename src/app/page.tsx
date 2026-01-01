@@ -153,7 +153,7 @@ export default function Home() {
                 <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/20 rounded-full blur-[100px]" />
             </div>
 
-            <div className="z-10 w-full max-w-3xl flex flex-col items-center">
+            <div className="z-10 w-full max-w-3xl flex flex-col items-center mt-20 sm:mt-0">
                 <div className="mb-12 text-center">
                     <h1 className="text-4xl sm:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 mb-4 pb-2">
                         Flight Tracker

@@ -26,18 +26,7 @@ export default function ArchitecturePage() {
                 <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/20 rounded-full blur-[100px]" />
             </div>
 
-            {/* Logo in upper left corner */}
-            <div className="absolute top-4 left-4 sm:top-8 sm:left-8 z-20">
-                <div className="p-2 sm:p-4 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl backdrop-blur-md border border-white/10 shadow-2xl hover:border-white/20 transition-all duration-300">
-                    <Image
-                        src="/logo.png"
-                        alt="Flight Tracker Logo"
-                        width={511}
-                        height={595}
-                        className="w-10 h-auto sm:w-16 hover:scale-105 transition-transform duration-300"
-                    />
-                </div>
-            </div>
+
 
             <div className="max-w-4xl mx-auto z-10">
                 <Link
