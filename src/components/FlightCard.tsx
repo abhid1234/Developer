@@ -85,12 +85,35 @@ export function FlightCard({ flight }: FlightCardProps) {
         }
     };
 
-    // Helper to calculate duration
-    const getDuration = (start: string, end: string) => {
-        // Simple diff for now as robust timezone diffing requires library
-        const diff = new Date(end).getTime() - new Date(start).getTime();
-        const hours = Math.floor(diff / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    // Helper to get timezone offset in milliseconds
+    const getTimezoneOffset = (timeZone: string) => {
+        try {
+            const now = new Date();
+            const utcDate = new Date(now.toLocaleString('en-US', { timeZone: 'UTC' }));
+            const tzDate = new Date(now.toLocaleString('en-US', { timeZone }));
+            return tzDate.getTime() - utcDate.getTime();
+        } catch (e) {
+            return 0;
+        }
+    };
+
+    // Helper to calculate duration with timezone adjustment
+    const getDuration = (start: string, end: string, originZone: string, destZone: string) => {
+        const startDate = new Date(start);
+        const endDate = new Date(end);
+
+        // Naive difference (face value difference)
+        const faceDiff = endDate.getTime() - startDate.getTime();
+
+        // Calculate offsets
+        const originOffset = getTimezoneOffset(originZone);
+        const destOffset = getTimezoneOffset(destZone);
+
+        // True duration
+        const trueDurationMs = faceDiff - (destOffset - originOffset);
+
+        const hours = Math.floor(trueDurationMs / (1000 * 60 * 60));
+        const minutes = Math.floor((trueDurationMs % (1000 * 60 * 60)) / (1000 * 60));
         return `${hours}h ${minutes}m`;
     };
 
@@ -175,7 +198,7 @@ export function FlightCard({ flight }: FlightCardProps) {
 
                     {/* Flight Path Visual */}
                     <div className="flex-1 px-4 flex flex-col items-center">
-                        <div className="text-gray-400 text-sm font-medium mb-2">{getDuration(flight.origin.time, flight.destination.time)}</div>
+                        <div className="text-gray-400 text-sm font-medium mb-2">{getDuration(flight.origin.time, flight.destination.time, flight.origin.timezone, flight.destination.timezone)}</div>
                         <div className="relative w-full flex items-center justify-center">
                             <div className="absolute inset-0 bg-blue-500/20 blur-xl rounded-full" />
                             <div className="w-full h-[2px] bg-gradient-to-r from-transparent via-blue-500 to-transparent relative">

@@ -85,11 +85,39 @@ export default function Home() {
         return new Date(cleanStr);
     };
 
-    // Helper to calculate duration
-    const getDuration = (start: string, end: string) => {
-        const diff = new Date(end).getTime() - new Date(start).getTime();
-        const hours = Math.floor(diff / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    // Helper to get timezone offset in milliseconds
+    const getTimezoneOffset = (timeZone: string) => {
+        try {
+            const now = new Date();
+            const utcDate = new Date(now.toLocaleString('en-US', { timeZone: 'UTC' }));
+            const tzDate = new Date(now.toLocaleString('en-US', { timeZone }));
+            return tzDate.getTime() - utcDate.getTime();
+        } catch (e) {
+            return 0;
+        }
+    };
+
+    // Helper to calculate duration with timezone adjustment
+    const getDuration = (start: string, end: string, originZone: string, destZone: string) => {
+        const startDate = new Date(start);
+        const endDate = new Date(end);
+
+        // Naive difference (face value difference)
+        const faceDiff = endDate.getTime() - startDate.getTime();
+
+        // Calculate offsets
+        const originOffset = getTimezoneOffset(originZone);
+        const destOffset = getTimezoneOffset(destZone);
+
+        // True duration = Face Difference - (Destination Offset - Origin Offset)
+        // Example: JFK (-5) to LHR (+0). Flght 7h.
+        // Dep 10:00 (Face). Arr 22:00 (Face). FaceDiff = 12h.
+        // DestOffset (0) - OriginOffset (-5) = +5h.
+        // True = 12h - 5h = 7h. Correct.
+        const trueDurationMs = faceDiff - (destOffset - originOffset);
+
+        const hours = Math.floor(trueDurationMs / (1000 * 60 * 60));
+        const minutes = Math.floor((trueDurationMs % (1000 * 60 * 60)) / (1000 * 60));
         return `${hours}h ${minutes}m`;
     };
 
@@ -301,7 +329,7 @@ export default function Home() {
                                                             {formatTimeWithZone(flight.destination.time)}
                                                         </td>
                                                         <td className="p-4 font-mono text-xs opacity-70">
-                                                            {getDuration(flight.origin.time, flight.destination.time)}
+                                                            {getDuration(flight.origin.time, flight.destination.time, flight.origin.timezone, flight.destination.timezone)}
                                                         </td>
                                                     </tr>
                                                 ))}
