@@ -1,3 +1,10 @@
 Flight_Tracker_Blog_Post*
 blog_post.md
 public/blog_images
+
+.git
+.gitignore
+node_modules
+.env.local
+package-lock.json
+.npmrc
