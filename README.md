@@ -72,6 +72,18 @@ The project is optimized for **Google Cloud Run**.
 -   **Log Redaction**: Standardized logging middleware automatically redacts sensitive keys from server logs.
 -   **Secret Management**: `.env` files are strictly excluded from version control.
 
+## 🧪 Testing
+
+This project uses **Jest** and **React Testing Library**.
+
+```bash
+# Run unit & integration tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+```
+
 ## 📜 License
 
 MIT
