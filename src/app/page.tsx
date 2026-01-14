@@ -205,6 +205,7 @@ export default function Home() {
                                 onSelect={(val) => setQuery(val)}
                                 options={autocompleteOptions}
                                 placeholder="Flight # (e.g., AA100)"
+                                containerClassName="!static"
                                 inputClassName="text-white px-2 py-3 text-lg placeholder-gray-500"
                                 startIcon={<Search className="w-6 h-6 text-gray-400 ml-4" />}
                             />
