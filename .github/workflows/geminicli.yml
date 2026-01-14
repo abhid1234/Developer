@@ -1,17 +1,16 @@
 name: Gemini CLI
 on:
-  push: { branches: ["main"] }
-  pull_request: { branches: ["main"] }
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
   workflow_dispatch:
 jobs:
   gemini-cli:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Run Gemini CLI
-        uses: google-github-actions/run-gemini-cli@v0.1.18
-        with:
-            gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
+      # Debug Step: Runs FIRST to verify the key
       - name: Debug API Key (Curl)
         env:
           API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -19,3 +18,8 @@ jobs:
           curl -H "Content-Type: application/json" \
           -d '{ "contents": [{"parts":[{"text": "Hello"}]}] }' \
           "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=$API_KEY"
+      # Main Action
+      - name: Run Gemini CLI
+        uses: google-github-actions/run-gemini-cli@v0.1.18
+        with:
+            gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
