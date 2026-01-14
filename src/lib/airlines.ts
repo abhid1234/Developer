@@ -1,35 +1,3 @@
-// Common Airline Codes for Autocomplete
-export const AIRLINES = [
-    { code: "AA", name: "American Airlines" },
-    { code: "DL", name: "Delta Air Lines" },
-    { code: "UA", name: "United Airlines" },
-    { code: "BA", name: "British Airways" },
-    { code: "LH", name: "Lufthansa" },
-    { code: "AF", name: "Air France" },
-    { code: "EK", name: "Emirates" },
-    { code: "QR", name: "Qatar Airways" },
-    { code: "SQ", name: "Singapore Airlines" },
-    { code: "CX", name: "Cathay Pacific" },
-    { code: "QF", name: "Qantas" },
-    { code: "JL", name: "Japan Airlines" },
-    { code: "NH", name: "All Nippon Airways" },
-    { code: "KE", name: "Korean Air" },
-    { code: "TK", name: "Turkish Airlines" },
-    { code: "VS", name: "Virgin Atlantic" },
-    { code: "AC", name: "Air Canada" },
-    { code: "KL", name: "KLM Royal Dutch Airlines" },
-    { code: "LX", name: "Swiss International Air Lines" },
-    { code: "IB", name: "Iberia" },
-    { code: "AZ", name: "Alitalia" },
-    { code: "WN", name: "Southwest Airlines" },
-    { code: "B6", name: "JetBlue Airways" },
-    { code: "AS", name: "Alaska Airlines" },
-    { code: "NK", name: "Spirit Airlines" },
-    { code: "F9", name: "Frontier Airlines" },
-    { code: "G4", name: "Allegiant Air" },
-    { code: "HA", name: "Hawaiian Airlines" },
-];
-
 // Mock list of popular flight numbers for demo purposes
 export const MOCK_FLIGHTS = [
     { code: "AA1", label: "American Airlines: JFK -> LAX" },
