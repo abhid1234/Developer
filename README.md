@@ -6,6 +6,7 @@ A production-ready, real-time Flight Tracking application built with **Next.js 1
 
 ![Flight Tracker](/public/blog_images/flight_card.png)
 
+
 ## ✨ Features
 
 -   **🌍 Live Flight Tracking**: Real-time status, altitude, and speed data using the [AviationStack API](https://aviationstack.com).
